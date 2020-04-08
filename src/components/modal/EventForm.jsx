@@ -21,7 +21,6 @@ const EventForm = props => {
     handleChange,
     eventType,
     buttonText,
-    colorObj
   } = props;
 
   return (
@@ -62,7 +61,7 @@ const EventForm = props => {
                 <div className="form-group">
                   <label>Start</label>
                   <div className="row">
-                    <div className="col-md-6">
+                    <div className="col-md-12">
                     {
                       !showtime 
                       ? <DatePicker 
@@ -86,7 +85,7 @@ const EventForm = props => {
                 <div className="form-group">
                   <label>End</label>
                   <div className="row">
-                    <div className="col-md-6">
+                    <div className="col-md-12">
                     {
                       !showtime 
                       ? <DatePicker 
