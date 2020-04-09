@@ -12,15 +12,8 @@ const AddEvent = () => {
   const [endDate, setEndDate] = useState(new Date());
 
   const appContext = useContext(AppContext);
-  const { addEvent, events, colors } = appContext;
 
-  const colorObj = {
-    primary: '#0275d8',
-    success: '#5cd85c',
-    info: '#5bc0de',
-    warning: '#f0ad4e',
-    danger: '#d9534f'
-  }
+  const { addEvent, events, colors, colorObj } = appContext;
 
   const inputChange = (e) => {
     setEventName(e.target.value);
@@ -84,6 +77,7 @@ const AddEvent = () => {
       title: eventName,
       start,
       end,
+      allDay: checkbox,
       bgColor: color,
       backgroundColor: colorObj[color]
     }
@@ -110,6 +104,7 @@ const AddEvent = () => {
         endDate={endDate}
         color={color}
         colors={colors}
+        colorObj={colorObj}
         handleChange={handleChange}
         eventType={createEvent}
         buttonText="Save"
