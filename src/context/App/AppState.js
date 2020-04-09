@@ -1,14 +1,16 @@
 import React, { useReducer } from 'react';
+import _ from 'lodash';
 import AppReducer from './appReducer';
 import AppContext from './appContext';
 import { useLocalStorage } from '../../hooks/storage';
 
-import { ADD_EVENT, GET_EVENTS, SELECT_EVENT, EDIT_EVENT, DELETE_EVENT } from '../types';
+import { ADD_EVENT, GET_EVENTS, SELECT_EVENT, EDIT_EVENT, DELETE_EVENT, ACTIVE_EVENTS, GET_ACTIVE_EVENTS } from '../types';
 
 const AppState = props => {
   const initialState = {
     events: [],
     colors: ['Primary', 'Success', 'Info', 'Warning', 'Danger'],
+    activeCalendarEvents: [],
     selectedEvent: {},
     colorObj: {
       primary: '#0275d8',
@@ -21,7 +23,11 @@ const AppState = props => {
 
   const [state, dispatch] = useReducer(AppReducer, initialState);
   const [item, setValue] = useLocalStorage('events');
+  // eslint-disable-next-line no-unused-vars
   const [selectedItem, setSelectedItem] = useLocalStorage('selectedEvent');
+  const [active, setActiveEvents] = useLocalStorage('activeCalendarEvents');
+  // eslint-disable-next-line no-unused-vars
+  const [getActiveEvent, setActiveEvent] = useLocalStorage('eventActive');
 
   const addEvent = event => {
     let userEvents = [...state.events];
@@ -38,6 +44,15 @@ const AppState = props => {
       dispatch({
         type: GET_EVENTS,
         payload: item
+      })
+    }
+  }
+
+  const getActiveEvents = () => {
+    if (active) {
+      dispatch({
+        type: GET_ACTIVE_EVENTS,
+        payload: active
       })
     }
   }
@@ -61,6 +76,18 @@ const AppState = props => {
     });
   }
 
+  const activeEvents = event => {
+    console.log('active')
+    let calendarEvents = [...state.activeCalendarEvents];
+    calendarEvents.push(event);
+    const activeEventsArray = _.uniqBy(calendarEvents, 'id');
+    setActiveEvents(activeEventsArray);
+    dispatch({ 
+      type: ACTIVE_EVENTS, 
+      payload: activeEventsArray 
+    });
+  }
+
   const deleteSelectedEvent = event => {
     const updatedEvents = item.filter(e => e.id !== event.id)
     setValue(updatedEvents);
@@ -68,7 +95,18 @@ const AppState = props => {
       type: DELETE_EVENT,
       payload: updatedEvents
     });
+
+    const activeEventsArray = active.filter(e => e.id !== event.id);
+    setActiveEvents(activeEventsArray);
+    dispatch({ 
+      type: ACTIVE_EVENTS, 
+      payload: activeEventsArray 
+    });
+
+    setActiveEvent({});
   }
+
+  
 
   return (
     <AppContext.Provider 
@@ -77,11 +115,14 @@ const AppState = props => {
         colors: state.colors,
         selectedEvent: state.selectedEvent,
         colorObj: state.colorObj,
+        activeCalendarEvents: state.activeCalendarEvents,
         addEvent,
         getEvents,
         selected,
         editSelectedEvent,
-        deleteSelectedEvent
+        deleteSelectedEvent,
+        activeEvents,
+        getActiveEvents
       }}
     >
       {props.children}
